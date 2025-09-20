@@ -1,0 +1,26 @@
+MealPlanneriOS
+└── Sources
+    ├── App
+    │   ├── MealPlanneriOSApp.swift
+    │   ├── ContentView.swift
+    │   ├── AppModels.swift
+    │   ├── AppState.swift
+    │   ├── Mapping.swift
+    │   ├── Repositories.swift
+    │   └── SupabaseClientFactory.swift
+    │
+    ├── Core
+    │   └── DBModels.swift
+    │
+    ├── Features
+    │   ├── Planning
+    │   │   └── PlanningView.swift
+    │   ├── Recipes
+    │   │   ├── RecipeDetailView.swift
+    │   │   └── RecipesView.swift
+    │   └── Shopping
+    │       └── ShoppingListView.swift
+    │
+    ├── Resources
+    │
+    └── SharedUI

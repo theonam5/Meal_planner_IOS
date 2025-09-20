@@ -6,14 +6,50 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		561ED4BF2E76AD5B006185FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561ED4BE2E76AD5B006185FF /* ContentView.swift */; };
+		561ED4D32E76B035006185FF /* DBModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561ED4D22E76B027006185FF /* DBModels.swift */; };
+		56ABBDBC2E76C267002D40C0 /* SupabaseClient+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDBB2E76C267002D40C0 /* SupabaseClient+Factory.swift */; };
+		56ABBDBD2E76C267002D40C0 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDB82E76C267002D40C0 /* AppState.swift */; };
+		56ABBDBE2E76C267002D40C0 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDB72E76C267002D40C0 /* AppModels.swift */; };
+		56ABBDBF2E76C267002D40C0 /* Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDB92E76C267002D40C0 /* Mapping.swift */; };
+		56ABBDC02E76C267002D40C0 /* Repositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDBA2E76C267002D40C0 /* Repositories.swift */; };
+		56ABBDC52E76C2A5002D40C0 /* RecipeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDC32E76C2A5002D40C0 /* RecipeDetailView.swift */; };
+		56ABBDC62E76C2A5002D40C0 /* RecipesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDC42E76C2A5002D40C0 /* RecipesView.swift */; };
+		56ABBDC82E76C2B7002D40C0 /* PlanningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDC72E76C2B7002D40C0 /* PlanningView.swift */; };
+		56ABBDCB2E76C2FE002D40C0 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 56ABBDCA2E76C2FE002D40C0 /* Supabase */; };
+		56ABBDCF2E7747AF002D40C0 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDCE2E7747AC002D40C0 /* RecipeCardView.swift */; };
+		56ABBDE52E7C8DF0002D40C0 /* MealPlanneriOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDE42E7C8DED002D40C0 /* MealPlanneriOSApp.swift */; };
+		56ABBDE72E7C8E10002D40C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDE62E7C8E0C002D40C0 /* ContentView.swift */; };
+		56ABBDE92E7C8E67002D40C0 /* Repositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDE82E7C8E65002D40C0 /* Repositories.swift */; };
+		56ABBDEB2E7C8E82002D40C0 /* ImageURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDEA2E7C8E80002D40C0 /* ImageURLBuilder.swift */; };
+		56ABBDED2E7C8EAA002D40C0 /* DBModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		561ED4B92E76AD5B006185FF /* MealPlanneriOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MealPlanneriOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		561ED4BE2E76AD5B006185FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		561ED4D22E76B027006185FF /* DBModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBModels.swift; sourceTree = "<group>"; };
+		56ABBDB72E76C267002D40C0 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
+		56ABBDB82E76C267002D40C0 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		56ABBDB92E76C267002D40C0 /* Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapping.swift; sourceTree = "<group>"; };
+		56ABBDBA2E76C267002D40C0 /* Repositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories.swift; sourceTree = "<group>"; };
+		56ABBDBB2E76C267002D40C0 /* SupabaseClient+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SupabaseClient+Factory.swift"; sourceTree = "<group>"; };
+		56ABBDC32E76C2A5002D40C0 /* RecipeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
+		56ABBDC42E76C2A5002D40C0 /* RecipesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesView.swift; sourceTree = "<group>"; };
+		56ABBDC72E76C2B7002D40C0 /* PlanningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanningView.swift; sourceTree = "<group>"; };
+		56ABBDCE2E7747AC002D40C0 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
+		56ABBDE42E7C8DED002D40C0 /* MealPlanneriOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanneriOSApp.swift; sourceTree = "<group>"; };
+		56ABBDE62E7C8E0C002D40C0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		56ABBDE82E7C8E65002D40C0 /* Repositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories.swift; sourceTree = "<group>"; };
+		56ABBDEA2E7C8E80002D40C0 /* ImageURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageURLBuilder.swift; sourceTree = "<group>"; };
+		56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBModels.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		561ED4BB2E76AD5B006185FF /* MealPlanneriOS */ = {
+		56ABBDF42E7C8F72002D40C0 /* Shopping */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MealPlanneriOS;
+			path = Shopping;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56ABBDCB2E76C2FE002D40C0 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,7 +69,7 @@
 		561ED4B02E76AD5B006185FF = {
 			isa = PBXGroup;
 			children = (
-				561ED4BB2E76AD5B006185FF /* MealPlanneriOS */,
+				561ED4CF2E76AE31006185FF /* Sources */,
 				561ED4BA2E76AD5B006185FF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +80,86 @@
 				561ED4B92E76AD5B006185FF /* MealPlanneriOS.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		561ED4C72E76AE31006185FF /* App */ = {
+			isa = PBXGroup;
+			children = (
+				56ABBDE82E7C8E65002D40C0 /* Repositories.swift */,
+				56ABBDE62E7C8E0C002D40C0 /* ContentView.swift */,
+				56ABBDE42E7C8DED002D40C0 /* MealPlanneriOSApp.swift */,
+				561ED4BE2E76AD5B006185FF /* ContentView.swift */,
+				56ABBDB72E76C267002D40C0 /* AppModels.swift */,
+				56ABBDB82E76C267002D40C0 /* AppState.swift */,
+				56ABBDB92E76C267002D40C0 /* Mapping.swift */,
+				56ABBDBA2E76C267002D40C0 /* Repositories.swift */,
+				56ABBDBB2E76C267002D40C0 /* SupabaseClient+Factory.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		561ED4C82E76AE31006185FF /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */,
+				56ABBDEA2E7C8E80002D40C0 /* ImageURLBuilder.swift */,
+				561ED4D22E76B027006185FF /* DBModels.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		561ED4C92E76AE31006185FF /* Planning */ = {
+			isa = PBXGroup;
+			children = (
+				56ABBDC72E76C2B7002D40C0 /* PlanningView.swift */,
+			);
+			path = Planning;
+			sourceTree = "<group>";
+		};
+		561ED4CA2E76AE31006185FF /* Recipes */ = {
+			isa = PBXGroup;
+			children = (
+				56ABBDCE2E7747AC002D40C0 /* RecipeCardView.swift */,
+				56ABBDC32E76C2A5002D40C0 /* RecipeDetailView.swift */,
+				56ABBDC42E76C2A5002D40C0 /* RecipesView.swift */,
+			);
+			path = Recipes;
+			sourceTree = "<group>";
+		};
+		561ED4CC2E76AE31006185FF /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				56ABBDF42E7C8F72002D40C0 /* Shopping */,
+				561ED4C92E76AE31006185FF /* Planning */,
+				561ED4CA2E76AE31006185FF /* Recipes */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		561ED4CD2E76AE31006185FF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		561ED4CE2E76AE31006185FF /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		561ED4CF2E76AE31006185FF /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				561ED4C72E76AE31006185FF /* App */,
+				561ED4C82E76AE31006185FF /* Core */,
+				561ED4CC2E76AE31006185FF /* Features */,
+				561ED4CD2E76AE31006185FF /* Resources */,
+				561ED4CE2E76AE31006185FF /* SharedUI */,
+			);
+			path = Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -61,10 +178,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				561ED4BB2E76AD5B006185FF /* MealPlanneriOS */,
+				56ABBDF42E7C8F72002D40C0 /* Shopping */,
 			);
 			name = MealPlanneriOS;
 			packageProductDependencies = (
+				56ABBDCA2E76C2FE002D40C0 /* Supabase */,
 			);
 			productName = MealPlanneriOS;
 			productReference = 561ED4B92E76AD5B006185FF /* MealPlanneriOS.app */;
@@ -94,6 +212,9 @@
 			);
 			mainGroup = 561ED4B02E76AD5B006185FF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				56ABBDC92E76C2FE002D40C0 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 561ED4BA2E76AD5B006185FF /* Products */;
 			projectDirPath = "";
@@ -119,6 +240,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56ABBDCF2E7747AF002D40C0 /* RecipeCardView.swift in Sources */,
+				56ABBDBC2E76C267002D40C0 /* SupabaseClient+Factory.swift in Sources */,
+				56ABBDBD2E76C267002D40C0 /* AppState.swift in Sources */,
+				56ABBDC82E76C2B7002D40C0 /* PlanningView.swift in Sources */,
+				56ABBDC52E76C2A5002D40C0 /* RecipeDetailView.swift in Sources */,
+				56ABBDC62E76C2A5002D40C0 /* RecipesView.swift in Sources */,
+				56ABBDBE2E76C267002D40C0 /* AppModels.swift in Sources */,
+				56ABBDBF2E76C267002D40C0 /* Mapping.swift in Sources */,
+				56ABBDEB2E7C8E82002D40C0 /* ImageURLBuilder.swift in Sources */,
+				56ABBDE52E7C8DF0002D40C0 /* MealPlanneriOSApp.swift in Sources */,
+				56ABBDC02E76C267002D40C0 /* Repositories.swift in Sources */,
+				56ABBDE72E7C8E10002D40C0 /* ContentView.swift in Sources */,
+				561ED4BF2E76AD5B006185FF /* ContentView.swift in Sources */,
+				561ED4D32E76B035006185FF /* DBModels.swift in Sources */,
+				56ABBDED2E7C8EAA002D40C0 /* DBModels.swift in Sources */,
+				56ABBDE92E7C8E67002D40C0 /* Repositories.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +390,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MealPlanneriOS/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -263,8 +401,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = theonam.MealPlanneriOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHlyY2l3c3ZlY3R4anNyeG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NzAyNzQsImV4cCI6MjA3MzE0NjI3NH0.jMXz9bkN2sJoAC63-TfnKxlhf1UerTr1fPOF5hysrgU";
+				SUPABASE_URL = "";
+				"SUPABASE_URL[arch=*]" = "https://cwlyrciwsvectxjsrxot.supabase.co";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -280,6 +422,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MealPlanneriOS/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -290,8 +433,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = theonam.MealPlanneriOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHlyY2l3c3ZlY3R4anNyeG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NzAyNzQsImV4cCI6MjA3MzE0NjI3NH0.jMXz9bkN2sJoAC63-TfnKxlhf1UerTr1fPOF5hysrgU";
+				SUPABASE_URL = "";
+				"SUPABASE_URL[arch=*]" = "https://cwlyrciwsvectxjsrxot.supabase.co";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -320,6 +467,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		56ABBDC92E76C2FE002D40C0 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		56ABBDCA2E76C2FE002D40C0 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 56ABBDC92E76C2FE002D40C0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 561ED4B12E76AD5B006185FF /* Project object */;
 }
