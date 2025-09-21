@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		561ED4BF2E76AD5B006185FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561ED4BE2E76AD5B006185FF /* ContentView.swift */; };
-		561ED4D32E76B035006185FF /* DBModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561ED4D22E76B027006185FF /* DBModels.swift */; };
+		564A14A52E7FF2E00098091B /* CatalogIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564A14A42E7FF2D50098091B /* CatalogIndex.swift */; };
 		56ABBDBC2E76C267002D40C0 /* SupabaseClient+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDBB2E76C267002D40C0 /* SupabaseClient+Factory.swift */; };
 		56ABBDBD2E76C267002D40C0 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDB82E76C267002D40C0 /* AppState.swift */; };
 		56ABBDBE2E76C267002D40C0 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDB72E76C267002D40C0 /* AppModels.swift */; };
@@ -24,12 +23,13 @@
 		56ABBDE92E7C8E67002D40C0 /* Repositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDE82E7C8E65002D40C0 /* Repositories.swift */; };
 		56ABBDEB2E7C8E82002D40C0 /* ImageURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDEA2E7C8E80002D40C0 /* ImageURLBuilder.swift */; };
 		56ABBDED2E7C8EAA002D40C0 /* DBModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */; };
+		56ABBE032E7F4A87002D40C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56ABBE022E7F4A87002D40C0 /* Assets.xcassets */; };
+		56ABBE052E7F4B5A002D40C0 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56ABBE042E7F4B5A002D40C0 /* Media.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		561ED4B92E76AD5B006185FF /* MealPlanneriOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MealPlanneriOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		561ED4BE2E76AD5B006185FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		561ED4D22E76B027006185FF /* DBModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBModels.swift; sourceTree = "<group>"; };
+		564A14A42E7FF2D50098091B /* CatalogIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogIndex.swift; sourceTree = "<group>"; };
 		56ABBDB72E76C267002D40C0 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
 		56ABBDB82E76C267002D40C0 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		56ABBDB92E76C267002D40C0 /* Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapping.swift; sourceTree = "<group>"; };
@@ -44,12 +44,24 @@
 		56ABBDE82E7C8E65002D40C0 /* Repositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories.swift; sourceTree = "<group>"; };
 		56ABBDEA2E7C8E80002D40C0 /* ImageURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageURLBuilder.swift; sourceTree = "<group>"; };
 		56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBModels.swift; sourceTree = "<group>"; };
+		56ABBE022E7F4A87002D40C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		56ABBE042E7F4B5A002D40C0 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		564A148F2E7FD4010098091B /* LLM */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LLM;
+			sourceTree = "<group>";
+		};
 		56ABBDF42E7C8F72002D40C0 /* Shopping */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Shopping;
+			sourceTree = "<group>";
+		};
+		56ABBDFA2E7F432F002D40C0 /* IA */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = IA;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +81,8 @@
 		561ED4B02E76AD5B006185FF = {
 			isa = PBXGroup;
 			children = (
+				56ABBE042E7F4B5A002D40C0 /* Media.xcassets */,
+				56ABBE022E7F4A87002D40C0 /* Assets.xcassets */,
 				561ED4CF2E76AE31006185FF /* Sources */,
 				561ED4BA2E76AD5B006185FF /* Products */,
 			);
@@ -85,10 +99,10 @@
 		561ED4C72E76AE31006185FF /* App */ = {
 			isa = PBXGroup;
 			children = (
+				564A14A42E7FF2D50098091B /* CatalogIndex.swift */,
 				56ABBDE82E7C8E65002D40C0 /* Repositories.swift */,
 				56ABBDE62E7C8E0C002D40C0 /* ContentView.swift */,
 				56ABBDE42E7C8DED002D40C0 /* MealPlanneriOSApp.swift */,
-				561ED4BE2E76AD5B006185FF /* ContentView.swift */,
 				56ABBDB72E76C267002D40C0 /* AppModels.swift */,
 				56ABBDB82E76C267002D40C0 /* AppState.swift */,
 				56ABBDB92E76C267002D40C0 /* Mapping.swift */,
@@ -101,9 +115,9 @@
 		561ED4C82E76AE31006185FF /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				564A148F2E7FD4010098091B /* LLM */,
 				56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */,
 				56ABBDEA2E7C8E80002D40C0 /* ImageURLBuilder.swift */,
-				561ED4D22E76B027006185FF /* DBModels.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -129,6 +143,7 @@
 		561ED4CC2E76AE31006185FF /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				56ABBDFA2E7F432F002D40C0 /* IA */,
 				56ABBDF42E7C8F72002D40C0 /* Shopping */,
 				561ED4C92E76AE31006185FF /* Planning */,
 				561ED4CA2E76AE31006185FF /* Recipes */,
@@ -178,7 +193,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				564A148F2E7FD4010098091B /* LLM */,
 				56ABBDF42E7C8F72002D40C0 /* Shopping */,
+				56ABBDFA2E7F432F002D40C0 /* IA */,
 			);
 			name = MealPlanneriOS;
 			packageProductDependencies = (
@@ -230,6 +247,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56ABBE052E7F4B5A002D40C0 /* Media.xcassets in Resources */,
+				56ABBE032E7F4A87002D40C0 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,8 +271,7 @@
 				56ABBDE52E7C8DF0002D40C0 /* MealPlanneriOSApp.swift in Sources */,
 				56ABBDC02E76C267002D40C0 /* Repositories.swift in Sources */,
 				56ABBDE72E7C8E10002D40C0 /* ContentView.swift in Sources */,
-				561ED4BF2E76AD5B006185FF /* ContentView.swift in Sources */,
-				561ED4D32E76B035006185FF /* DBModels.swift in Sources */,
+				564A14A52E7FF2E00098091B /* CatalogIndex.swift in Sources */,
 				56ABBDED2E7C8EAA002D40C0 /* DBModels.swift in Sources */,
 				56ABBDE92E7C8E67002D40C0 /* Repositories.swift in Sources */,
 			);

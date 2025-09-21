@@ -1,0 +1,6 @@
+
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+Config/*.xcconfig.local
+

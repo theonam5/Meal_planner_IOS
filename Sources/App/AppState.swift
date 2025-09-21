@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Supabase   // nécessaire pour SB.shared et l’appel PostgREST
 
 @MainActor
 final class AppState: ObservableObject {
@@ -7,6 +8,8 @@ final class AppState: ObservableObject {
     // MARK: - Données "catalogue" / DB
     @Published var ingredientsById: [Int: Ingredient] = [:]
     @Published var meals: [Meal] = []
+    /// Devient true quand le catalogue a été chargé avec succès (et contient au moins 1 item)
+    @Published var isCatalogLoaded: Bool = false
 
     // MARK: - Panier de repas
     struct BasketMeal: Identifiable, Codable, Hashable {
@@ -17,7 +20,8 @@ final class AppState: ObservableObject {
     @Published var basket: [BasketMeal] = [] { didSet { saveBasket() } }
 
     // MARK: - Etat utilisateur
-    @Published var planned: [PlannedMeal] = []
+    @Published var planned: [PlannedMeal] = []          // existant (ton type à toi)
+    @Published var plannedRecipes: [PlannedRecipe] = [] // recettes importées (QuickImport)
 
     /// Items cochés (recettes: "\(ingredientId)_\(unit)"; manuels: "manual:<UUID>")
     @Published var checked: Set<String> = [] { didSet { saveChecked() } }
@@ -34,6 +38,7 @@ final class AppState: ObservableObject {
     private let manualKey   = "manual_items"
     private let consumedKey = "consumed_groups"
     private let basketKey   = "basket_meals"
+    // Pas de persistance pour plannedRecipes ici, car DetectedRow n'est pas Codable.
 
     // MARK: - Init
     init() {
@@ -66,6 +71,15 @@ final class AppState: ObservableObject {
         let id = UUID()
         let category: String
         let items: [ShoppingItem]
+    }
+
+    // MARK: - Modèle planning (QuickImport)
+    struct PlannedRecipe: Identifiable {
+        let id = UUID()
+        let title: String
+        let servings: Int
+        let date: Date
+        let ingredients: [DetectedRow]
     }
 
     // MARK: - Normalisation / catégorisation (v2)
@@ -485,5 +499,42 @@ final class AppState: ObservableObject {
         return ingredientsById.values.first(where: {
             $0.name.folding(options: .diacriticInsensitive, locale: .current).lowercased().contains(target)
         })
+    }
+
+    // MARK: - Planning API (QuickImport)
+
+    /// Ajoute une recette importée (titre + nb personnes + ingrédients) au "planning import".
+    /// Laisse ton `planned: [PlannedMeal]` intact.
+    func addPlannedRecipe(title: String, servings: Int, ingredients: [DetectedRow], date: Date = Date()) {
+        let t = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedTitle = t.isEmpty ? "Recette" : t
+        plannedRecipes.append(.init(title: normalizedTitle, servings: max(1, servings), date: date, ingredients: ingredients))
+    }
+
+    // MARK: - Chargement catalogue (Supabase)
+
+    /// Charge la table "ingredients" depuis Supabase et met à jour `ingredientsById` + `isCatalogLoaded`.
+    /// Appelle-la au lancement de l’app (ex: dans `.task` de la vue racine).
+    func refreshIngredientsFromSupabase() async {
+        do {
+            let response = try await SB.shared
+                .from("ingredients")
+                .select()       // ex: .select("id,nom,categorie_rayon,unite,nom_canon,photo_ingredient,pivot_unit")
+                .execute()
+
+            let rows = try JSONDecoder().decode([IngredientDB].self, from: response.data)
+            let mapped = rows.map(Ingredient.init(db:))
+            ingredientsById = Dictionary(uniqueKeysWithValues: mapped.map { ($0.id, $0) })
+            isCatalogLoaded = !mapped.isEmpty
+
+            #if DEBUG
+            print("[AppState] Catalogue chargé: \(ingredientsById.count) ingrédients.")
+            #endif
+        } catch {
+            isCatalogLoaded = false
+            #if DEBUG
+            print("[AppState] Échec chargement ingrédients:", error.localizedDescription)
+            #endif
+        }
     }
 }

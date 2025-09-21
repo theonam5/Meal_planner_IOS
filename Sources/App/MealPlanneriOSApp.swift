@@ -1,13 +1,17 @@
 import SwiftUI
 
 @main
-struct MealPlanneriOSApp: App {
-    @StateObject private var app = AppState()
+struct MealPlannerApp: App {
+    @StateObject var app = AppState()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()              // <- c'est BIEN ContentView
+            ContentView()
                 .environmentObject(app)
+                .task {
+                    // Charge le catalogue d’ingrédients dès le démarrage
+                    await app.refreshIngredientsFromSupabase()
+                }
         }
     }
 }

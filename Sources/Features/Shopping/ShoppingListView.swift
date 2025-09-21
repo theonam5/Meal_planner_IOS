@@ -4,7 +4,7 @@ struct ShoppingListView: View {
     @EnvironmentObject var app: AppState
     @State private var quickText = ""
     @FocusState private var quickFocused: Bool
-    @State private var suggestions: [String] = []   // 👈 nouveau
+    @State private var suggestions: [String] = []   // suggestions live
 
     var sections: [AppState.ShoppingSection] { app.buildShoppingSections() }
 
@@ -34,20 +34,20 @@ struct ShoppingListView: View {
                                 .onSubmit { addQuick() }
                                 .textInputAutocapitalization(.never)
                                 .disableAutocorrection(true)
-                                // 👇 met à jour les suggestions quand on tape
+                                // suggestions mises à jour en live
                                 .onChange(of: quickText) { newValue in
                                     let q = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
                                     suggestions = q.count >= 2 ? app.suggestManualNames(query: q) : []
                                 }
                         }
 
-                        // 👇 ruban de suggestions
+                        // Ruban de suggestions
                         if !suggestions.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 6) {
                                     ForEach(suggestions, id: \.self) { s in
                                         Button {
-                                            // auto-complète puis ajoute direct
+                                            // auto-complète puis ajoute
                                             quickText = s
                                             addQuick()
                                         } label: {
@@ -96,6 +96,14 @@ struct ShoppingListView: View {
                 }
             }
             .navigationTitle("Courses")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: QuickImportView().environmentObject(app)) {
+                        Image(systemName: "text.viewfinder")
+                    }
+                    .accessibilityLabel(Text("Import rapide (OCR)"))
+                }
+            }
         }
     }
 
@@ -104,7 +112,7 @@ struct ShoppingListView: View {
         guard !t.isEmpty else { return }
         app.addManualQuick(t)   // crée un item manuel quantité 0, unité ""
         quickText = ""
-        suggestions = []        // 👈 nettoie les suggestions
+        suggestions = []        // nettoie les suggestions
         quickFocused = true     // garde le focus pour enchaîner les ajouts
     }
 
