@@ -79,11 +79,15 @@ struct QuickImportView: View {
                                         rows: rows,
                                         catalog: self.app.ingredientsById,
                                         using: client,
-                                        confidenceThreshold: 0.75
+                                        confidenceThreshold: 0.8
                                     )
                                 } catch {
                                     #if DEBUG
-                                    print("Canonicalizer error: \(error.localizedDescription)")
+                                    if let decodingError = error as? DecodingError {
+                                        print("[Canonicalizer] JSON decode failed: \(decodingError)")
+                                    } else {
+                                        print("[Canonicalizer] error: \(error.localizedDescription)")
+                                    }
                                     #endif
                                 }
                             } else {
@@ -135,7 +139,7 @@ struct QuickImportView: View {
     // MARK: - Normalisation locale
     private func normalizeRow(_ r: DetectedRow) -> DetectedRow {
         var n = r
-        n.name = n.name.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).lowercased()
+        n.name = n.name.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         n.unit = n.unit.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         return n
     }
@@ -149,12 +153,24 @@ struct QuickImportView: View {
 
         // 1) Panier
         for row in chosen {
-            app.addManualItem(
-                name: row.name,
-                category: "",
-                unit: row.unit,
-                quantity: max(0, row.quantity ?? 0)
-            )
+            let quantity = max(0, row.quantity ?? 0)
+            let unit = row.unit
+            if let canonicalId = row.canonicalId {
+                app.addManualItem(
+                    name: row.name,
+                    category: "",
+                    unit: unit,
+                    quantity: quantity,
+                    ingredientId: canonicalId
+                )
+            } else {
+                app.addManualItem(
+                    name: row.name,
+                    category: "",
+                    unit: unit,
+                    quantity: quantity
+                )
+            }
         }
 
         // 2) Planning en même temps

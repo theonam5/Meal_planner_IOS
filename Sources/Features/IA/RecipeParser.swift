@@ -7,6 +7,7 @@ struct DetectedRow: Identifiable {
     var unit: String
     var quantity: Double?
     var baseQuantity: Double?
+    var canonicalId: Int?
 }
 
 enum RecipeParser {
@@ -39,7 +40,8 @@ enum RecipeParser {
                     name: item.n.trimmingCharacters(in: .whitespacesAndNewlines),
                     unit: normalizeUnit(item.u ?? ""),
                     quantity: item.q,
-                    baseQuantity: item.q
+                    baseQuantity: item.q,
+                    canonicalId: nil
                 )
             )
         }
@@ -58,7 +60,14 @@ enum RecipeParser {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
             .map {
-                DetectedRow(isSelected: true, name: $0, unit: "", quantity: nil, baseQuantity: nil)
+                DetectedRow(
+                    isSelected: true,
+                    name: $0,
+                    unit: "",
+                    quantity: nil,
+                    baseQuantity: nil,
+                    canonicalId: nil
+                )
             }
     }
 

@@ -51,6 +51,7 @@ final class AppState: ObservableObject {
     // MARK: - Modèles pour la liste de courses
     struct ManualItem: Identifiable, Codable, Hashable {
         let id: UUID
+        var ingredientId: Int?
         var name: String
         var category: String
         var unit: String        // vide si non renseigné
@@ -270,8 +271,10 @@ final class AppState: ObservableObject {
                 consumedQtyByKey[key] = min(newConsumed, tuple.recipeQty)
             }
             manualItems.removeAll { m in
-                m.name.caseInsensitiveCompare(name) == .orderedSame &&
-                m.unit == unit && m.category == category
+                let resolved = resolvedManualProperties(for: m)
+                return resolved.name.localizedCaseInsensitiveCompare(name) == .orderedSame &&
+                    resolved.unit == unit &&
+                    resolved.category.localizedCaseInsensitiveCompare(category) == .orderedSame
             }
             ids.forEach { checked.remove($0) }
         } else {
@@ -285,19 +288,27 @@ final class AppState: ObservableObject {
 
         // Recettes: "\(ingredientId)_\(unit)"
         for (_, ing) in ingredientsById {
-            if ing.name.caseInsensitiveCompare(name) == .orderedSame,
+            let displayName = preferredName(for: ing)
+            if displayName.localizedCaseInsensitiveCompare(name) == .orderedSame,
                ing.unit == unit,
                ing.category == category {
-                ids.append("\(ing.id)_\(unit)")
+                let candidateId = "\(ing.id)_\(unit)"
+                if !ids.contains(candidateId) {
+                    ids.append(candidateId)
+                }
             }
         }
 
         // Manuels: "manual:<uuid>"
-        for m in manualItems where
-            m.name.caseInsensitiveCompare(name) == .orderedSame &&
-            m.unit == unit &&
-            m.category == category {
-            ids.append("manual:\(m.id.uuidString)")
+        for m in manualItems {
+            let resolved = resolvedManualProperties(for: m)
+            if resolved.name.localizedCaseInsensitiveCompare(name) == .orderedSame,
+               resolved.unit == unit,
+               resolved.category.localizedCaseInsensitiveCompare(category) == .orderedSame {
+                if !ids.contains(resolved.checkId) {
+                    ids.append(resolved.checkId)
+                }
+            }
         }
         return ids
     }
@@ -310,19 +321,61 @@ final class AppState: ObservableObject {
         return "\(norm(name))|\(norm(unit))|\(norm(category))"
     }
 
+    /// Affiche en priorité le nom canonique s'il est présent.
+    private func preferredName(for ingredient: Ingredient) -> String {
+        if let canonical = ingredient.canonicalName?.trimmingCharacters(in: .whitespacesAndNewlines), !canonical.isEmpty {
+            return canonical
+        }
+        return ingredient.name
+    }
+
     // MARK: - Articles manuels
 
     /// Ajout manuel explicite: accepte quantité 0 et unité vide.
-    func addManualItem(name: String, category: String, unit: String, quantity: Double) {
-        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        let cat = category.isEmpty ? inferCategory(for: trimmed) : category
+    func addManualItem(
+        name: String,
+        category: String,
+        unit: String,
+        quantity: Double,
+        ingredientId: Int? = nil
+    ) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedUnit = unit.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        let qty = max(0, quantity)
+
+        if let ingredientId, let ingredient = ingredientsById[ingredientId] {
+            let displayName = preferredName(for: ingredient)
+            let resolvedUnit = trimmedUnit.isEmpty ? ingredient.unit : trimmedUnit
+            let resolvedCategory = ingredient.category
+
+            if let idx = manualItems.firstIndex(where: {
+                $0.ingredientId == ingredientId && $0.unit == resolvedUnit
+            }) {
+                manualItems[idx].quantity += qty
+                manualItems[idx].name = displayName
+                manualItems[idx].category = resolvedCategory
+            } else {
+                manualItems.append(.init(
+                    id: UUID(),
+                    ingredientId: ingredientId,
+                    name: displayName,
+                    category: resolvedCategory,
+                    unit: resolvedUnit,
+                    quantity: qty
+                ))
+            }
+            return
+        }
+
+        let resolvedCategory = category.isEmpty ? inferCategory(for: trimmedName) : category
         manualItems.append(.init(
             id: UUID(),
-            name: trimmed,
-            category: cat,
-            unit: unit,
-            quantity: max(0, quantity)  // 0 autorisé
+            ingredientId: nil,
+            name: trimmedName,
+            category: resolvedCategory,
+            unit: trimmedUnit,
+            quantity: qty  // 0 autorisé
         ))
     }
 
@@ -346,6 +399,16 @@ final class AppState: ObservableObject {
 
     // MARK: - Construction de la liste de courses (via PANIER)
 
+    private func resolvedManualProperties(for item: ManualItem) -> (name: String, category: String, unit: String, checkId: String, ingredientId: Int?) {
+        if let id = item.ingredientId, let ingredient = ingredientsById[id] {
+            let displayName = item.name.isEmpty ? preferredName(for: ingredient) : item.name
+            let resolvedUnit = item.unit.isEmpty ? ingredient.unit : item.unit
+            let category = ingredient.category
+            return (displayName, category, resolvedUnit, "\(ingredient.id)_\(resolvedUnit)", ingredient.id)
+        }
+        return (item.name, item.category, item.unit, "manual:\(item.id.uuidString)", nil)
+    }
+
     private func aggregateTotalsFromBasket() -> [String: (displayName: String, category: String, unit: String,
                                                           totalQty: Double, recipeQty: Double, manualQty: Double,
                                                           idsForCheck: [String], anyIngredientId: Int?)] {
@@ -358,7 +421,9 @@ final class AppState: ObservableObject {
             for comp in meal.ingredients {
                 guard let ing = ingredientsById[comp.ingredientId] else { continue }
                 let add = comp.qtyPerPerson * Double(b.persons)
-                let name = ing.name, unit = comp.unit, cat = ing.category
+                let name = preferredName(for: ing)
+                let unit = comp.unit
+                let cat = ing.category
                 let key = groupKey(name: name, unit: unit, category: cat)
 
                 var t = totals[key] ?? (name, cat, unit, 0, 0, 0, [], ing.id)
@@ -373,12 +438,14 @@ final class AppState: ObservableObject {
 
         // 2) Manuels (on crée le groupe même si quantité 0 pour l’affichage)
         for m in manualItems {
-            let key = groupKey(name: m.name, unit: m.unit, category: m.category)
-            var t = totals[key] ?? (m.name, m.category, m.unit, 0, 0, 0, [], nil)
-            t.0 = m.name; t.1 = m.category; t.2 = m.unit
+            let resolved = resolvedManualProperties(for: m)
+            let key = groupKey(name: resolved.name, unit: resolved.unit, category: resolved.category)
+            var t = totals[key] ?? (resolved.name, resolved.category, resolved.unit, 0, 0, 0, [], resolved.ingredientId)
+            t.0 = resolved.name; t.1 = resolved.category; t.2 = resolved.unit
             t.3 += m.quantity     // total
             t.5 += m.quantity     // part manuelle
-            t.6.append("manual:\(m.id.uuidString)")
+            t.6.append(resolved.checkId)
+            if let ingId = resolved.ingredientId { t.7 = ingId }
             totals[key] = t
         }
 
@@ -528,7 +595,7 @@ final class AppState: ObservableObject {
             isCatalogLoaded = !mapped.isEmpty
 
             #if DEBUG
-            print("[AppState] Catalogue chargé: \(ingredientsById.count) ingrédients.")
+            print("[AppState] ingredients loaded: \(ingredientsById.count)")
             #endif
         } catch {
             isCatalogLoaded = false
