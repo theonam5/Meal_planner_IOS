@@ -18,6 +18,7 @@ public enum LLM {
     public struct CanonCandidate: Codable {
         public let id: Int
         public let name: String
+        public let canonicalName: String?
     }
 
     public struct CanonRequest: Codable {

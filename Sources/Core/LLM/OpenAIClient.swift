@@ -131,15 +131,16 @@ struct OpenAIClient: LLM.Client {
         Tu es un mappeur deterministe d’ingredients vers un catalogue. Temperature=0.
         ENTREE:
         {"items":[{"n":String,"q":Number?,"u":String?},...],
-         "candidates":{"<idx>":[{"id":Int,"name":String},...]}}
+         "candidates":{"<idx>":[{"id":Int,"name":String,"canonicalName":String?},...]}}
         REGLES:
         - Pour chaque item "idx", choisir "canonical_id" UNIQUEMENT parmi candidates[idx].
         - Si aucun candidat satisfaisant: canonical_id=null, canonical_name=null, confidence<=0.5.
         - Interdiction d’inventer des ids ou des noms hors candidats.
-        - canonical_name = exactement le champ "name" du candidat choisi (conserver accents et casse).
+        - Pour chaque candidat: "name" = libellé catalogue, "canonicalName" = forme canonique (si fournie).
+        - canonical_name = canonicalName du candidat choisi si disponible, sinon son champ name, en conservant accents/casse.
         - Critere de choix:
-          1) Egalite exacte insensible a la casse entre item.n et candidate.name -> confidence >= 0.95
-          2) Sinon, plus fort recouvrement de tokens (Jaccard) entre item.n et candidate.name.
+          1) Egalite exacte insensible a la casse entre item.n et (canonicalName ?? name) -> confidence >= 0.95
+          2) Sinon, plus fort recouvrement de tokens (Jaccard) entre item.n et canonicalName/name.
           3) En cas d’egalite, preferer le candidat au nom le plus court (plus canonique).
         - Ne pas modifier "q" ni "u" ici.
         SORTIE:
