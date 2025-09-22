@@ -55,7 +55,7 @@ final class AppState: ObservableObject {
         var name: String
         var category: String
         var unit: String        // vide si non renseigné
-        var quantity: Double    // 0 par défaut pour un ajout manuel
+        var quantity: Double    // 0 par défaut pour un ajout manuel X
     }
 
     struct ShoppingItem: Identifiable, Hashable {
