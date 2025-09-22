@@ -4,3 +4,9 @@
 *.xcodeproj/xcuserdata/
 Config/*.xcconfig.local
 
+# Xcode user-specific junk
+*.xcuserdata/
+*.xcuserstate
+# Finder dust
+.DS_Store
+**/.DS_Store
