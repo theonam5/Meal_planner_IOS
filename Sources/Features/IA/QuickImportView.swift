@@ -40,7 +40,7 @@ struct QuickImportView: View {
     @State private var recipeTitle: String = ""
 
     // MARK: - OCR (Vision) + Appel LLM + Canonicalisation
-    private func runOCR() {
+    @MainActor private func runOCR() {
         guard let img = uiImage, let cgImage = img.cgImage else { return }
         ocrError = nil
         detected.removeAll()
@@ -49,7 +49,11 @@ struct QuickImportView: View {
             do {
                 let request = VNRecognizeTextRequest { req, err in
                     if let err {
-                        DispatchQueue.main.async { self.ocrError = err.localizedDescription }
+                        Task {
+                            await MainActor.run {
+                                self.ocrError = err.localizedDescription
+                            }
+                        }
                         return
                     }
                     let observations = (req.results as? [VNRecognizedTextObservation]) ?? []
@@ -116,7 +120,9 @@ struct QuickImportView: View {
                 let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
                 try handler.perform([request])
             } catch {
-                self.ocrError = "OCR échec: \(error.localizedDescription)"
+                await MainActor.run {
+                    self.ocrError = "OCR échec: \(error.localizedDescription)"
+                }
             }
         }
     }
@@ -326,10 +332,14 @@ struct QuickImportView: View {
                 Task {
                     if let data = try? await newItem.loadTransferable(type: Data.self),
                        let img = UIImage(data: data) {
-                        uiImage = img
-                        runOCR()
+                        await MainActor.run {
+                            self.uiImage = img
+                            self.runOCR()
+                        }
                     } else {
-                        ocrError = "Impossible de charger l’image"
+                        await MainActor.run {
+                            self.ocrError = "Impossible de charger l’image"
+                        }
                     }
                 }
             }
