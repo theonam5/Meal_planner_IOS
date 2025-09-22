@@ -256,12 +256,21 @@ struct QuickImportView: View {
                     // Ingrédients
                     Section("Ingrédients détectés") {
                         ForEach($detected) { $row in
-                            HStack {
+                            HStack(alignment: .top, spacing: 8) {
                                 Toggle("", isOn: $row.isSelected).labelsHidden()
 
-                                TextField("Nom", text: $row.name)
-                                    .textInputAutocapitalization(.never)
-                                    .disableAutocorrection(true)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    TextField("Nom", text: $row.name)
+                                        .textInputAutocapitalization(.never)
+                                        .disableAutocorrection(true)
+
+                                    if let canonicalId = row.canonicalId,
+                                       let ingredient = app.ingredientsById[canonicalId] {
+                                        Text("ID #\(canonicalId) · \(ingredient.name)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
 
                                 Spacer()
 
