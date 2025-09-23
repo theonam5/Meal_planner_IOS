@@ -1,12 +1,13 @@
-
+# Xcode user-specific and shared data (avoid leaking schemes or local prefs)
 *.xcworkspace/xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
+*.xcworkspace/xcshareddata/
+*.xcodeproj/xcshareddata/
+
+# Local configuration overrides
 Config/*.xcconfig.local
 
-# Xcode user-specific junk
-*.xcuserdata/
-*.xcuserstate
 # Finder dust
 .DS_Store
 **/.DS_Store

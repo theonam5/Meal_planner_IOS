@@ -128,31 +128,57 @@ struct OpenAIClient: LLM.Client {
     // MARK: - Canonicalisation (nouveau)
     func canonicalize(payloadJSON: String) async throws -> LLM.CanonResponse {
         let system = """
-        Tu es un mappeur deterministe d’ingredients vers un catalogue. Temperature=0.
-        Reponds UNIQUEMENT en json valide, sans texte hors du json.
-        ENTREE:
-        {"items":[{"n":String,"q":Number?,"u":String?},...],
-         "candidates":{"<idx>":[{"id":Int,"name":String,"canonicalName":String?},...]}}
-        REGLES:
-        - Pour chaque item "idx", choisir "canonical_id" UNIQUEMENT parmi candidates[idx].
-        - Si aucun candidat satisfaisant: canonical_id=null, canonical_name=null, confidence<=0.5.
-        - Interdiction d’inventer des ids ou des noms hors candidats.
-        - Pour chaque candidat: "name" = libellé catalogue, "canonicalName" = forme canonique (si fournie).
-        - canonical_name = canonicalName du candidat choisi si disponible, sinon son champ name, en conservant accents/casse.
-        - Critere de choix:
-          1) Egalite exacte insensible a la casse entre item.n et (canonicalName ?? name) -> confidence >= 0.95
-          2) Sinon, plus fort recouvrement de tokens (Jaccard) entre item.n et canonicalName/name.
-          3) En cas d’egalite, preferer le candidat au nom le plus court (plus canonique).
-        - Ne pas modifier "q" ni "u" ici.
-        SORTIE:
-        {"mapped":[{"idx":Int,"canonical_id":Int?,"canonical_name":String?,"confidence":Number}]}
-        EXEMPLE:
-        IN:
-        {"items":[{"n":"viande hachée"}],
-         "candidates":{"0":[{"id":42,"name":"Boeuf haché"},{"id":99,"name":"Viande hachée X"}]}}
-        OUT:
-        {"mapped":[{"idx":0,"canonical_id":99,"canonical_name":"Viande hachée X","confidence":0.96}]}
-        """
+            Tu es un mappeur deterministe d’ingredients vers un catalogue. temperature=0.
+            Reponds UNIQUEMENT en json valide (objet racine), sans texte hors du json. (mot-cle: json)
+
+            ENTREE (schema strict):
+            {
+              "items": [ {"n":String, "q":Number|null, "u":String|null}, ... ],
+              "candidates": {
+                 "0": [ {"id":Int, "name":String, "canonicalName":String|null}, ... ],
+                 "1": [ ... ],
+                 ...
+              }
+            }
+            - N = longueur de items. Les cles de "candidates" sont les indices 0..N-1 sous forme de chaines.
+
+            REGLES DE SORTIE (OBLIGATOIRES ET EXHAUSTIVES):
+            - Retourne EXACTEMENT N elements dans "mapped", dans le MEME ORDRE que items (i de 0 a N-1).
+            - Pour chaque i: produire {"idx":i, "canonical_id":Int|null, "canonical_name":String|null, "confidence":Number}.
+            - Il doit y avoir UN et UN SEUL "mapped" par i. AUCUNE omission, AUCUN doublon, AUCUN tri.
+            - Si candidates[i] est vide ou non satisfaisant: canonical_id=null, canonical_name=null, confidence<=0.5.
+
+            CONTRAINTES:
+            - Interdiction d’inventer des ids ou des noms hors candidates[i].
+            - "confidence" est un reel entre 0 et 1, arrondi a 2 decimales.
+            - canonical_name = candidates[i].canonicalName si present, sinon candidates[i].name (garder accents/casse du candidat).
+
+            CRITERES D’APPARIEMENT (dans cet ordre):
+            1) Egalite exacte insensible a la casse entre item.n et (canonicalName || name) -> confidence >= 0.95.
+            2) Sinon, comparer des tokens normalises (lowercase, sans accents, apostrophes et ponctuation supprimees, pluriels basiques enlevés):
+               - ex: "huile d'olive" == "huile dolive" == "huile olive"
+               - ex: "tomates concassees" ~ "tomate concassee"
+               Score selon recouvrement (Jaccard) des tokens.
+            3) Egalite de score -> preferer le nom le plus court (plus canonique).
+
+            NE PAS modifier "q" ni "u" ici.
+
+            SORTIE (schema strict):
+            { "mapped": [ {"idx":Int,"canonical_id":Int|null,"canonical_name":String|null,"confidence":Number}, ... ] }
+
+            EXEMPLES MINIMAUX:
+            IN:
+            {"items":[{"n":"viande hachee"}],
+             "candidates":{"0":[{"id":42,"name":"Boeuf hache"},{"id":99,"name":"Viande hachee"}]}}
+            OUT:
+            {"mapped":[{"idx":0,"canonical_id":99,"canonical_name":"Viande hachee","confidence":0.96}]}
+
+            IN:
+            {"items":[{"n":"huile d'olive"}],
+             "candidates":{"0":[{"id":87,"name":"Huile dolive"},{"id":12,"name":"Huile de tournesol"}]}}
+            OUT:
+            {"mapped":[{"idx":0,"canonical_id":87,"canonical_name":"Huile dolive","confidence":0.92}]}
+            """
 
         let body: [String: Any] = [
             "model": model,
