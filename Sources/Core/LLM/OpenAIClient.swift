@@ -129,6 +129,7 @@ struct OpenAIClient: LLM.Client {
     func canonicalize(payloadJSON: String) async throws -> LLM.CanonResponse {
         let system = """
         Tu es un mappeur deterministe d’ingredients vers un catalogue. Temperature=0.
+        Reponds UNIQUEMENT en json valide, sans texte hors du json.
         ENTREE:
         {"items":[{"n":String,"q":Number?,"u":String?},...],
          "candidates":{"<idx>":[{"id":Int,"name":String,"canonicalName":String?},...]}}
