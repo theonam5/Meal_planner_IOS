@@ -25,6 +25,7 @@
 		56ABBDED2E7C8EAA002D40C0 /* DBModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */; };
 		56ABBE032E7F4A87002D40C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56ABBE022E7F4A87002D40C0 /* Assets.xcassets */; };
 		56ABBE052E7F4B5A002D40C0 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56ABBE042E7F4B5A002D40C0 /* Media.xcassets */; };
+		56C546732E8314E80092E618 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C546722E8314E80092E618 /* Theme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		56ABBDEC2E7C8EA8002D40C0 /* DBModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBModels.swift; sourceTree = "<group>"; };
 		56ABBE022E7F4A87002D40C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56ABBE042E7F4B5A002D40C0 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		56C546722E8314E80092E618 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -103,6 +105,7 @@
 				56ABBDE82E7C8E65002D40C0 /* Repositories.swift */,
 				56ABBDE62E7C8E0C002D40C0 /* ContentView.swift */,
 				56ABBDE42E7C8DED002D40C0 /* MealPlanneriOSApp.swift */,
+				56C546722E8314E80092E618 /* Theme.swift */,
 				56ABBDB72E76C267002D40C0 /* AppModels.swift */,
 				56ABBDB82E76C267002D40C0 /* AppState.swift */,
 				56ABBDB92E76C267002D40C0 /* Mapping.swift */,
@@ -267,6 +270,7 @@
 				56ABBDC62E76C2A5002D40C0 /* RecipesView.swift in Sources */,
 				56ABBDBE2E76C267002D40C0 /* AppModels.swift in Sources */,
 				56ABBDBF2E76C267002D40C0 /* Mapping.swift in Sources */,
+				56C546732E8314E80092E618 /* Theme.swift in Sources */,
 				56ABBDEB2E7C8E82002D40C0 /* ImageURLBuilder.swift in Sources */,
 				56ABBDE52E7C8DF0002D40C0 /* MealPlanneriOSApp.swift in Sources */,
 				56ABBDC02E76C267002D40C0 /* Repositories.swift in Sources */,

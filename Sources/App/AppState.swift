@@ -22,6 +22,7 @@ final class AppState: ObservableObject {
     // MARK: - Etat utilisateur
     @Published var planned: [PlannedMeal] = []          // existant (ton type à toi)
     @Published var plannedRecipes: [PlannedRecipe] = [] // recettes importées (QuickImport)
+@Published var importedRecipes: [ImportedRecipe] = [] // captures OCR enregistrées
 
     /// Items cochés (recettes: "\(ingredientId)_\(unit)"; manuels: "manual:<UUID>")
     @Published var checked: Set<String> = [] { didSet { saveChecked() } }
@@ -74,13 +75,34 @@ final class AppState: ObservableObject {
         let items: [ShoppingItem]
     }
 
+    struct ImportedRecipe: Identifiable {
+        let id = UUID()
+        let title: String
+        let baseServings: Int
+        let createdAt: Date
+        var ingredients: [DetectedRow]
+    }
+
     // MARK: - Modèle planning (QuickImport)
     struct PlannedRecipe: Identifiable {
         let id = UUID()
         let title: String
-        let servings: Int
+        var servings: Int
+        let baseServings: Int
         let date: Date
-        let ingredients: [DetectedRow]
+        var ingredients: [DetectedRow]
+
+        func scaledIngredients() -> [DetectedRow] {
+            guard baseServings > 0 else { return ingredients }
+            let factor = Double(servings) / Double(baseServings)
+            return ingredients.map { row in
+                var copy = row
+                if let base = row.baseQuantity ?? row.quantity {
+                    copy.quantity = base * factor
+                }
+                return copy
+            }
+        }
     }
 
     // MARK: - Normalisation / catégorisation (v2)
@@ -227,7 +249,7 @@ final class AppState: ObservableObject {
     func addToBasket(mealId: Int, persons: Int) {
         let p = max(1, persons)
         if let idx = basket.firstIndex(where: { $0.mealId == mealId }) {
-            basket[idx].persons += p
+            basket[idx].persons = p
         } else {
             basket.append(BasketMeal(id: mealId, mealId: mealId, persons: p))
         }
@@ -299,6 +321,32 @@ final class AppState: ObservableObject {
             }
         }
 
+        for recipe in plannedRecipes {
+            let scaledRows = recipe.scaledIngredients()
+            for row in scaledRows where row.isSelected {
+                let trimmedUnit = row.unit.trimmingCharacters(in: .whitespacesAndNewlines)
+                if let ingredientId = row.canonicalId, let ingredient = ingredientsById[ingredientId] {
+                    let displayName = preferredName(for: ingredient)
+                    let resolvedUnit = trimmedUnit.isEmpty ? ingredient.unit : trimmedUnit
+                    let categoryName = ingredient.category
+                    if displayName.localizedCaseInsensitiveCompare(name) == .orderedSame,
+                       resolvedUnit == unit,
+                       categoryName.localizedCaseInsensitiveCompare(category) == .orderedSame {
+                        let candidateId = "\(ingredient.id)_\(resolvedUnit)"
+                        if !ids.contains(candidateId) { ids.append(candidateId) }
+                    }
+                } else {
+                    let displayName = row.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let categoryName = inferCategory(for: displayName)
+                    if displayName.localizedCaseInsensitiveCompare(name) == .orderedSame,
+                       trimmedUnit == unit,
+                       categoryName.localizedCaseInsensitiveCompare(category) == .orderedSame {
+                        let candidateId = "planned:\(recipe.id.uuidString):\(row.id.uuidString)"
+                        if !ids.contains(candidateId) { ids.append(candidateId) }
+                    }
+                }
+            }
+        }
         // Manuels: "manual:<uuid>"
         for m in manualItems {
             let resolved = resolvedManualProperties(for: m)
@@ -411,8 +459,8 @@ final class AppState: ObservableObject {
 
     private func aggregateTotalsFromBasket() -> [String: (displayName: String, category: String, unit: String,
                                                           totalQty: Double, recipeQty: Double, manualQty: Double,
-                                                          idsForCheck: [String], anyIngredientId: Int?)] {
-        var totals: [String: (String, String, String, Double, Double, Double, [String], Int?)] = [:]
+                                                          idsForCheck: [String], anyIngredientId: Int?, hasRecipe: Bool)] {
+        var totals: [String: (String, String, String, Double, Double, Double, [String], Int?, Bool)] = [:]
 
         // 1) Recettes issues du panier
         let mealById = Dictionary(uniqueKeysWithValues: meals.map { ($0.id, $0) })
@@ -426,13 +474,52 @@ final class AppState: ObservableObject {
                 let cat = ing.category
                 let key = groupKey(name: name, unit: unit, category: cat)
 
-                var t = totals[key] ?? (name, cat, unit, 0, 0, 0, [], ing.id)
+                var t = totals[key] ?? (name, cat, unit, 0, 0, 0, [], ing.id, false)
                 t.0 = name; t.1 = cat; t.2 = unit
                 t.3 += add          // total
                 t.4 += add          // part recettes
                 t.6.append("\(ing.id)_\(unit)")
                 t.7 = ing.id
+                t.8 = true
                 totals[key] = t
+            }
+        }
+
+        // 1bis) Recettes importées (QuickImport)
+        for recipe in plannedRecipes {
+            let scaledRows = recipe.scaledIngredients()
+            for row in scaledRows where row.isSelected {
+                let quantity = row.quantity ?? row.baseQuantity ?? 0
+                let trimmedUnit = row.unit.trimmingCharacters(in: .whitespacesAndNewlines)
+                if let ingredientId = row.canonicalId, let ingredient = ingredientsById[ingredientId] {
+                    let name = preferredName(for: ingredient)
+                    let unit = trimmedUnit.isEmpty ? ingredient.unit : trimmedUnit
+                    let category = ingredient.category
+                    let key = groupKey(name: name, unit: unit, category: category)
+                    var t = totals[key] ?? (name, category, unit, 0, 0, 0, [], ingredient.id, false)
+                    t.0 = name; t.1 = category; t.2 = unit
+                    t.3 += quantity
+                    t.4 += quantity
+                    let checkId = "\(ingredient.id)_\(unit)"
+                    if !t.6.contains(checkId) { t.6.append(checkId) }
+                    t.7 = ingredient.id
+                    t.8 = true
+                    totals[key] = t
+                } else {
+                    let name = row.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !name.isEmpty else { continue }
+                    let unit = trimmedUnit
+                    let category = inferCategory(for: name)
+                    let key = groupKey(name: name, unit: unit, category: category)
+                    var t = totals[key] ?? (name, category, unit, 0, 0, 0, [], nil, false)
+                    t.0 = name; t.1 = category; t.2 = unit
+                    t.3 += quantity
+                    t.4 += quantity
+                    let checkId = "planned:\(recipe.id.uuidString):\(row.id.uuidString)"
+                    if !t.6.contains(checkId) { t.6.append(checkId) }
+                    t.8 = true
+                    totals[key] = t
+                }
             }
         }
 
@@ -440,7 +527,7 @@ final class AppState: ObservableObject {
         for m in manualItems {
             let resolved = resolvedManualProperties(for: m)
             let key = groupKey(name: resolved.name, unit: resolved.unit, category: resolved.category)
-            var t = totals[key] ?? (resolved.name, resolved.category, resolved.unit, 0, 0, 0, [], resolved.ingredientId)
+            var t = totals[key] ?? (resolved.name, resolved.category, resolved.unit, 0, 0, 0, [], resolved.ingredientId, false)
             t.0 = resolved.name; t.1 = resolved.category; t.2 = resolved.unit
             t.3 += m.quantity     // total
             t.5 += m.quantity     // part manuelle
@@ -465,10 +552,10 @@ final class AppState: ObservableObject {
             let hasManual = t.idsForCheck.contains { $0.hasPrefix("manual:") }
 
             // Ne supprime le groupe que s’il n’y a vraiment rien ET aucun item manuel
-            if newTotal <= 0, recipeLeft <= 0, !hasManual {
+            if newTotal <= 0, recipeLeft <= 0, !hasManual, !t.hasRecipe {
                 totals.removeValue(forKey: key)
             } else {
-                totals[key] = (t.displayName, t.category, t.unit, newTotal, recipeLeft, t.manualQty, t.idsForCheck, t.anyIngredientId)
+                totals[key] = (t.displayName, t.category, t.unit, newTotal, recipeLeft, t.manualQty, t.idsForCheck, t.anyIngredientId, t.hasRecipe)
             }
 
             // Sécurité: borne "consumed" si le panier a baissé
@@ -572,10 +659,53 @@ final class AppState: ObservableObject {
 
     /// Ajoute une recette importée (titre + nb personnes + ingrédients) au "planning import".
     /// Laisse ton `planned: [PlannedMeal]` intact.
-    func addPlannedRecipe(title: String, servings: Int, ingredients: [DetectedRow], date: Date = Date()) {
+    func addImportedRecipe(title: String, baseServings: Int, ingredients: [DetectedRow], createdAt: Date = Date()) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedTitle = trimmed.isEmpty ? "Recette" : trimmed
+        let base = max(1, baseServings)
+        let normalizedIngredients = ingredients.map { row -> DetectedRow in
+            var copy = row
+            if copy.baseQuantity == nil {
+                copy.baseQuantity = row.quantity
+            }
+            return copy
+        }
+        let recipe = ImportedRecipe(title: normalizedTitle, baseServings: base, createdAt: createdAt, ingredients: normalizedIngredients)
+        importedRecipes.insert(recipe, at: 0)
+    }
+
+    func removeImportedRecipe(id: UUID) {
+        importedRecipes.removeAll { $0.id == id }
+    }
+
+    func addPlannedRecipe(title: String, servings: Int, baseServings: Int?, ingredients: [DetectedRow], date: Date = Date()) {
         let t = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedTitle = t.isEmpty ? "Recette" : t
-        plannedRecipes.append(.init(title: normalizedTitle, servings: max(1, servings), date: date, ingredients: ingredients))
+        let base = max(1, baseServings ?? servings)
+        let normalizedServings = max(1, servings)
+        let normalizedIngredients = ingredients.map { row -> DetectedRow in
+            var copy = row
+            if copy.baseQuantity == nil {
+                copy.baseQuantity = row.quantity
+            }
+            return copy
+        }
+        let newEntry = PlannedRecipe(
+            title: normalizedTitle,
+            servings: normalizedServings,
+            baseServings: base,
+            date: date,
+            ingredients: normalizedIngredients
+        )
+
+        var updated = plannedRecipes
+        updated.append(newEntry)
+        plannedRecipes = updated
+    }
+
+    func updatePlannedRecipeServings(id: UUID, servings: Int) {
+        guard let index = plannedRecipes.firstIndex(where: { $0.id == id }) else { return }
+        plannedRecipes[index].servings = max(1, servings)
     }
 
     // MARK: - Chargement catalogue (Supabase)

@@ -2,6 +2,10 @@ import SwiftUI
 
 @main
 struct MealPlannerApp: App {
+    init() {
+        AppTheme.configureAppearances()
+    }
+
     @StateObject var app = AppState()
 
     var body: some Scene {

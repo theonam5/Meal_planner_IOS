@@ -4,15 +4,30 @@ struct ContentView: View {
     @EnvironmentObject var app: AppState   // ⬅️ remplace @StateObject
 
     var body: some View {
-        TabView {
-            ShoppingListView()
-                .tabItem { Label("Courses", systemImage: "cart") }
+        ZStack {
+            AppTheme.backgroundGradient
+                .ignoresSafeArea()
 
-            PlanningView()
-                .tabItem { Label("Planning", systemImage: "calendar") }
+            TabView {
+                RecipesView()
+                    .tabItem {
+                        Label("Recettes", systemImage: "fork.knife")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
 
-            RecipesView()
-                .tabItem { Label("Recettes", systemImage: "fork.knife") }
+                PlanningView()
+                    .tabItem {
+                        Label("Mon menu", systemImage: "menucard")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
+
+                ShoppingListView()
+                    .tabItem {
+                        Label("Courses", systemImage: "cart")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
+            }
+            .tint(AppTheme.accent)
         }
         // ⬇️ supprime .environmentObject(app) ici (déjà injecté par l’app)
     }

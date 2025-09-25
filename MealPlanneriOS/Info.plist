@@ -6,5 +6,8 @@
 	<string>$(SUPABASE_ANON_KEY)</string>
 	<key>SUPABASE_URL</key>
 	<string>$(SUPABASE_URL)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Permets à MealPlanner de prendre des photos de recettes.</string>
 </dict>
+
 </plist>
