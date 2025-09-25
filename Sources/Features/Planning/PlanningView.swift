@@ -39,7 +39,7 @@ struct PlanningView: View {
                                         recipe: recipe,
                                         onShowDetail: { selectedRecipe = recipe },
                                         onRemove: {
-                                            app.plannedRecipes.removeAll { $0.id == recipe.id }
+                                            app.removePlannedRecipe(id: recipe.id)
                                             if selectedRecipe?.id == recipe.id {
                                                 selectedRecipe = nil
                                             }
@@ -68,7 +68,7 @@ struct PlanningView: View {
 
                             if !app.plannedRecipes.isEmpty {
                                 Button(role: .destructive) {
-                                    app.plannedRecipes.removeAll()
+                                    app.clearPlannedRecipes()
                                     selectedRecipe = nil
                                 } label: {
                                     Label("Vider les importés", systemImage: "trash")

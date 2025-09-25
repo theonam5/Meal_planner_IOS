@@ -252,6 +252,9 @@ final class AppState: ObservableObject {
             basket[idx].persons = p
         } else {
             basket.append(BasketMeal(id: mealId, mealId: mealId, persons: p))
+            if let meal = meals.first(where: { $0.id == mealId }) {
+                clearConsumed(for: consumedKeys(for: meal))
+            }
         }
     }
 
@@ -261,11 +264,19 @@ final class AppState: ObservableObject {
     }
 
     func removeFromBasket(mealId: Int) {
+        let keys: [String]
+        if let meal = meals.first(where: { $0.id == mealId }) {
+            keys = consumedKeys(for: meal)
+        } else {
+            keys = []
+        }
         basket.removeAll { $0.mealId == mealId }
+        clearConsumed(for: keys)
     }
 
     func clearBasket() {
         basket.removeAll()
+        resetConsumed()
     }
 
     // MARK: - Checklist
@@ -367,6 +378,38 @@ final class AppState: ObservableObject {
             s.folding(options: .diacriticInsensitive, locale: .current).lowercased()
         }
         return "\(norm(name))|\(norm(unit))|\(norm(category))"
+    }
+
+    private func consumedKeys(for meal: Meal) -> [String] {
+        meal.ingredients.compactMap { comp in
+            guard let ingredient = ingredientsById[comp.ingredientId] else { return nil }
+            let name = preferredName(for: ingredient)
+            let category = ingredient.category
+            return groupKey(name: name, unit: comp.unit, category: category)
+        }
+    }
+
+    private func consumedKeys(for recipe: PlannedRecipe) -> [String] {
+        var keys: Set<String> = []
+        for row in recipe.ingredients where row.isSelected {
+            let trimmedUnit = row.unit.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let ingredientId = row.canonicalId, let ingredient = ingredientsById[ingredientId] {
+                let name = preferredName(for: ingredient)
+                let unit = trimmedUnit.isEmpty ? ingredient.unit : trimmedUnit
+                keys.insert(groupKey(name: name, unit: unit, category: ingredient.category))
+            } else {
+                let name = row.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !name.isEmpty else { continue }
+                let category = inferCategory(for: name)
+                keys.insert(groupKey(name: name, unit: trimmedUnit, category: category))
+            }
+        }
+        return Array(keys)
+    }
+
+    private func clearConsumed(for keys: [String]) {
+        guard !keys.isEmpty else { return }
+        Set(keys).forEach { consumedQtyByKey.removeValue(forKey: $0) }
     }
 
     /// Affiche en priorité le nom canonique s'il est présent.
@@ -544,7 +587,17 @@ final class AppState: ObservableObject {
 
         // Appliquer la consommation côté recettes (dynamique)
         for (key, t) in totals {
-            let consumed = consumedQtyByKey[key] ?? 0
+            var consumed = consumedQtyByKey[key] ?? 0
+            // Clamp persisted consumption to the new recipe totals to avoid hiding freshly added quantities.
+            if consumed < 0 {
+                consumed = 0
+                consumedQtyByKey[key] = 0
+            }
+            if consumed > t.recipeQty {
+                consumed = t.recipeQty
+                consumedQtyByKey[key] = consumed
+            }
+
             let recipeLeft = max(0, t.recipeQty - consumed)
             let newTotal = recipeLeft + t.manualQty
 
@@ -552,16 +605,12 @@ final class AppState: ObservableObject {
             let hasManual = t.idsForCheck.contains { $0.hasPrefix("manual:") }
 
             // Ne supprime le groupe que s’il n’y a vraiment rien ET aucun item manuel
-            if newTotal <= 0, recipeLeft <= 0, !hasManual, !t.hasRecipe {
+            if newTotal <= 0, recipeLeft <= 0, !hasManual {
                 totals.removeValue(forKey: key)
             } else {
                 totals[key] = (t.displayName, t.category, t.unit, newTotal, recipeLeft, t.manualQty, t.idsForCheck, t.anyIngredientId, t.hasRecipe)
             }
 
-            // Sécurité: borne "consumed" si le panier a baissé
-            if t.recipeQty < consumed {
-                consumedQtyByKey[key] = t.recipeQty
-            }
         }
 
         // Items UI
@@ -699,6 +748,7 @@ final class AppState: ObservableObject {
         )
 
         var updated = plannedRecipes
+        clearConsumed(for: consumedKeys(for: newEntry))
         updated.append(newEntry)
         plannedRecipes = updated
     }
@@ -706,6 +756,20 @@ final class AppState: ObservableObject {
     func updatePlannedRecipeServings(id: UUID, servings: Int) {
         guard let index = plannedRecipes.firstIndex(where: { $0.id == id }) else { return }
         plannedRecipes[index].servings = max(1, servings)
+    }
+
+    func removePlannedRecipe(id: UUID) {
+        guard let recipe = plannedRecipes.first(where: { $0.id == id }) else { return }
+        let keys = consumedKeys(for: recipe)
+        plannedRecipes.removeAll { $0.id == id }
+        clearConsumed(for: keys)
+    }
+
+    func clearPlannedRecipes() {
+        guard !plannedRecipes.isEmpty else { return }
+        let keys = plannedRecipes.flatMap { consumedKeys(for: $0) }
+        plannedRecipes.removeAll()
+        clearConsumed(for: keys)
     }
 
     // MARK: - Chargement catalogue (Supabase)
